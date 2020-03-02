@@ -32,8 +32,8 @@
         const words = message.split(" ");
             
         const input = `${message} wikipedia`;
-        if((words.includes("hvem") && words.includes("er")) || (words.includes("hvad") && words.includes("er"))){
-            const firstNumber = input.indexOf("hvem");
+        if((words.includes("who") && words.includes("is") && words.includs("clock") == flase || (words.includes("hvad") && words.includes("er") && words.includs("clock") == flase)){
+            const firstNumber = input.indexOf("who");
             const gotInput = input.substring(0, firstNumber-1);
             const searchInput = input.replace(gotInput, "");
             $.get(`https://www.googleapis.com/customsearch/v1?key=${key}&cx=${id}&q=${searchInput}`, function(data){
@@ -47,6 +47,19 @@
                 console.log(data);
             })
         } 
+	
+        if(words.includes("clock") && words.includes("clock")){
+            const time = new Date();
+            const hour = time.getHours();
+            const min = time.getMinutes();
+            const speech = new SpeechSynthesisUtterance();
+            speech.text = `it is ${hour}:${min} in the day or night`; // Her skal du erstatte denne kommentar med speech.text = Hvad du gerne vil have den siger;
+            speech.volume = .4;
+            speech.rate = 1;
+            speech.pitch = 1;
+
+            window.speechSynthesis.speak(speech);
+        }
     }
             
 
