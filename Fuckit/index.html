@@ -29,22 +29,26 @@
     };
 
     const readOutLoud = (message) => {
-            const first2wordsarray = message.split(" ");
-            const checkText = first2wordsarray[0] + " " + first2wordsarray[1];
-            const input = message;
-            if(checkText == "what is"){
-                $.get(`https://www.googleapis.com/customsearch/v1?key=${key}&cx=${id}&q=${input}`, function(data){
+            const words = message.split(" ");
+            
+            const input = `${message} wikipedia`;
+            if(words.includes("what") && words.includes("is")){
+                const firstNumber = input.indexOf("what");
+                const gotInput = input.substring(0, firstNumber-1);
+                const searchInput = input.replace(gotInput, "");
+                $.get(`https://www.googleapis.com/customsearch/v1?key=${key}&cx=${id}&q=${searchInput}`, function(data){
                     const speech = new SpeechSynthesisUtterance();
                     speech.text = data.items[0].snippet; // Her skal du erstatte denne kommentar med speech.text = Hvad du gerne vil have den siger;
-                    speech.volume = .6;
+                    speech.volume = .4;
                     speech.rate = 1;
                     speech.pitch = 1;
 
                     window.speechSynthesis.speak(speech);
                     console.log(data);
                 })
-            };
-        }
+            }
+            
+    }
             
 
         // Hvis den skal virke skal de 2 første ord i din sætning være "what is" og din sætning skal være på engelsk.
