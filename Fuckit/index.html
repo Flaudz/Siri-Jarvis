@@ -1,70 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Siri/Jarvis</title>
-</head>
-<body>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Siri/Jarvis</title>
+	</head>
+	<body>
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+		<script>
+			let id = "010686278768473536409:lrre8ejoppw";
+			let key = "AIzaSyB4GKJQeKrp7yC7M3twHxhgETNkWE8oaAo";
+			const SpeechRecognition =
+				window.SpeechRecognition || window.webkitSpeechRecognition;
+			const recognition = new SpeechRecognition();
+			recognition.start();
 
+			recognition.onresult = (event) => {
+				const current = event.resultIndex;
 
-        let id = "010686278768473536409:lrre8ejoppw";
-        let key = "AIzaSyB4GKJQeKrp7yC7M3twHxhgETNkWE8oaAo";
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const recognition = new SpeechRecognition();
-        recognition.start();
+				const transcript = event.results[current][0].transcript.toLowerCase();
+				console.log(transcript);
+				readOutLoud(transcript);
+			};
 
-        recognition.onresult = (event) => {
-	    const current = event.resultIndex;
+			recognition.onend = () => {
+				recognition.start();
+			};
 
-	    const transcript = event.results[current][0].transcript.toLowerCase();
-	    console.log(transcript);
-	    readOutLoud(transcript);
-    };
+			const readOutLoud = (message) => {
+				const words = message.split(" ");
 
-    recognition.onend = () => {
-	    recognition.start();
-    };
+				const input = `${message} wikipedia`;
+				if (
+					(words.includes("who") &&
+						words.includes("is") &&
+						words.includes("clock") == false) ||
+					(words.includes("hvad") &&
+						words.includes("er") &&
+						words.includes("clock") == false)
+				) {
+					const firstNumber = input.indexOf("who");
+					const gotInput = input.substring(0, firstNumber - 1);
+					const searchInput = input.replace(gotInput, "");
+					$.get(
+						`https://www.googleapis.com/customsearch/v1?key=${key}&cx=${id}&q=${searchInput}`,
+						function(data) {
+							const speech = new SpeechSynthesisUtterance();
+							speech.text = data.items[0].snippet; // Her skal du erstatte denne kommentar med speech.text = Hvad du gerne vil have den siger;
+							speech.volume = 0.4;
+							speech.rate = 1;
+							speech.pitch = 1;
 
-    const readOutLoud = (message) => {
-        const words = message.split(" ");
-            
-        const input = `${message} wikipedia`;
-        if((words.includes("who") && words.includes("is") && words.includs("clock") == flase || (words.includes("hvad") && words.includes("er") && words.includs("clock") == flase)){
-            const firstNumber = input.indexOf("who");
-            const gotInput = input.substring(0, firstNumber-1);
-            const searchInput = input.replace(gotInput, "");
-            $.get(`https://www.googleapis.com/customsearch/v1?key=${key}&cx=${id}&q=${searchInput}`, function(data){
-                const speech = new SpeechSynthesisUtterance();
-                speech.text = data.items[0].snippet; // Her skal du erstatte denne kommentar med speech.text = Hvad du gerne vil have den siger;
-                speech.volume = .4;
-                speech.rate = 1;
-                speech.pitch = 1;
+							window.speechSynthesis.speak(speech);
+							console.log(data);
+						}
+					);
+				}
 
-                window.speechSynthesis.speak(speech);
-                console.log(data);
-            })
-        } 
-	
-        if(words.includes("clock") && words.includes("clock")){
-            const time = new Date();
-            const hour = time.getHours();
-            const min = time.getMinutes();
-            const speech = new SpeechSynthesisUtterance();
-            speech.text = `it is ${hour}:${min} in the day or night`; // Her skal du erstatte denne kommentar med speech.text = Hvad du gerne vil have den siger;
-            speech.volume = .4;
-            speech.rate = 1;
-            speech.pitch = 1;
+				if (words.includes("what") && words.includes("clock")) {
+					const time = new Date();
+					const hour = time.getHours();
+					const min = time.getMinutes();
+					const speech = new SpeechSynthesisUtterance();
+					speech.text = `it is ${hour}:${min} in the day or night`; // Her skal du erstatte denne kommentar med speech.text = Hvad du gerne vil have den siger;
+					speech.volume = 0.4;
+					speech.rate = 1;
+					speech.pitch = 1;
 
-            window.speechSynthesis.speak(speech);
-        }
-    }
-            
+					window.speechSynthesis.speak(speech);
+				}
+			};
 
-        // Hvis den skal virke skal de 2 første ord i din sætning være "what is" og din sætning skal være på engelsk.
-
-    </script>
-</body>
+			// Hvis den skal virke skal de 2 første ord i din sætning være "what is" og din sætning skal være på engelsk.
+		</script>
+	</body>
 </html>
